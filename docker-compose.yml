@@ -1,0 +1,54 @@
+version: '2'
+
+services:
+  eureka-server:
+    build: eureka-server/
+    restart: always
+    network_mode: "host"
+    hostname: localhost
+    image: eureka-server
+    ports:
+      - 8761:8761
+
+  config-service:
+    build: config-server/
+    restart: always
+    network_mode: "host"
+    image: config-service
+    hostname: localhost
+    ports:
+      - 8888:8888
+
+  zuul-api:
+    build: zuul-api/
+    depends_on:
+      - config-service
+      - eureka-server
+    restart: always
+    network_mode: "host"
+    image: zuul-api
+    hostname: localhost
+    ports:
+      - 8080:8080
+
+  authentication-server:
+    build: authentication-server/
+    depends_on:
+      - zuul-api
+    restart: always
+    network_mode: "host"
+    hostname: localhost
+    image: authentication-server
+    ports:
+      - 8070:8070
+
+  registration-service:
+    build: registration-server/
+    depends_on:
+      - zuul-api
+    restart: always
+    network_mode: "host"
+    image: registration-service
+    hostname: localhost
+    ports:
+      - 8000:8000
